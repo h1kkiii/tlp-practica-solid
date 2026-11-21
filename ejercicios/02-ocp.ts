@@ -1,18 +1,42 @@
-type PaymentType = "card" | "cash";
+interface PaymentMethod {
+  pay(amount: number): void;
+}
 
-class PaymentProcessor {
-  pay(type: PaymentType, amount: number): void {
-    switch (type) {
-      case "card":
-        console.log(`Pagando $${amount} con tarjeta`);
-        break;
-      case "cash":
-        console.log(`Pagando $${amount} en efectivo`);
-        break;
-      default:
-        throw new Error("Medio de pago no soportado");
-    }
+class CardPayment implements PaymentMethod {
+  pay(amount: number): void {
+    console.log(`Pagando $${amount} con tarjeta`);
   }
 }
 
-new PaymentProcessor().pay("card", 100);
+class CashPayment implements PaymentMethod {
+  pay(amount: number): void {
+    console.log(`Pagando $${amount} en efectivo`);
+  }
+}
+
+class TransferPayment implements PaymentMethod {
+  pay(amount: number): void {
+    console.log(`Pagando $${amount} con transferencia`);
+  }
+}
+
+class PaymentProcessor {
+  pay(metodo: PaymentMethod, amount: number): void {
+    metodo.pay(amount);
+  }
+}
+
+new PaymentProcessor().pay(new CardPayment(), 100);
+
+// Respuesta:
+// - Que parte debe modificarse para agregar pago con transferencia?
+// Con el diseño original habria que agregar un nuevo case dentro de PaymentProcessor. Ahora
+// solo se crea una clase nueva (TransferPayment) y PaymentProcessor no se toca.
+//
+// - Como podriamos representar un medio de pago?
+// Con una interfaz comun, PaymentMethod, que define el metodo pay. Cada medio de pago es una
+// clase que implementa esa interfaz.
+//
+// - Que comportamiento comun tienen todos los medios de pago?
+// Todos saben procesar un pago de un monto determinado, es decir, todos cumplen el metodo
+// pay(amount) definido en PaymentMethod.
